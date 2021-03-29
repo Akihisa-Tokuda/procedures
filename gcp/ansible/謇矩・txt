@@ -1,0 +1,17 @@
+- plugin install
+pip install requests google-auth
+
+- 修正
+sample.gcp.ymlのプロジェクト名を修正
+
+- host内容を取得
+ansible-inventory --list -i sample.gcp.yml
+
+- groupの内容を確認し、controller.ymlとworker.ymlのhostの指定を書き換える。
+
+- playbook実行
+#ローカルでshell実行 
+ansible-playbook -i sample.gcp.yml controller.yml
+
+#ローカルでshell実行
+ansible-playbook -i sample.gcp.yml worker.yml

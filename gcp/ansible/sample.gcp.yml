@@ -1,0 +1,6 @@
+plugin: gcp_compute
+projects:
+  - #TODO project name
+auth_kind: application
+groups:
+  gce_instance: yes

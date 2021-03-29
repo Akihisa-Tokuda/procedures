@@ -1,0 +1,7 @@
+- name: Copy Cybereason installer
+  copy:
+    src: sh no9-worker012.sh
+    dest: /home/XXX/ # homedir
+- name: execute first sh
+  shell: sh no9-worker012.sh
+

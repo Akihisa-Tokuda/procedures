@@ -1,0 +1,7 @@
+- name: Copy Cybereason installer
+  copy:
+    src: no8-contoroller012-first.sh
+    dest: /home/XXX/ # homedir
+- name: execute first sh
+  shell: sh no8-contoroller012-first.sh
+
