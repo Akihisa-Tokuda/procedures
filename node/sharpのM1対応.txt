@@ -1,0 +1,73 @@
+# sharpがインストールできない
+https://github.com/lovell/sharp/issues/2460#issuecomment-739092532
+
+sharpがインストールできていない
+Start with installing Mac ports. You will use ports to install libvips dependencies (follow next step)
+
+Install these ports: pkgconfig and glib2. Use this command to install ports: $ sudo port install [port-name]
+
+Now depending on the formats you'll be handling, you'll have to install the library for each format. Have look at the libvips dependency list and find them on Mac ports.
+In my case, jpg and png formats are enough, so I installed libjpeg-turbo and libpng
+
+Once you've installed the libraries, you're ready to install libvips.
+
+Download and unpack the latest libvips release; I used this release.
+Inside the unpacked folder, run $ ./configure.
+Then run $ make followed by $ sudo make install
+This should install vips globally. Verify by running: $ which vips
+
+When libvips is globally installed, sharp will use the global version. So clean up your node_modules folder and do a fresh install and you're ready to go 👍
+
+[解決手順]
+# xcodeのインストール
+App Storeからインストール
+
+# anyenv install
+brew install anyenv
+anyenv install --init
+anyenv install -l
+
+mkdir -p $(anyenv root)/plugins
+
+anyenv install pyenv
+echo 'export PYENV_ROOT="$HOME/.pyenv"' >> ~/.zshrc
+echo 'export PATH="$PYENV_ROOT/bin:$PATH"' >> ~/.zshrc
+echo 'eval "$(pyenv init -)"' >> ~/.zshrc
+
+pyenv install 3.8.7
+pyenv global 3.9.1
+// terminal再起動
+
+
+# インストール
+anyenv install nodenv
+nodenv -v
+
+nodenv install 15.03.0
+nodenv rehash
+nodenv global 15.03.0
+
+echo 'eval "$(nodenv init -)"' >> ~/.zshrc
+brew install openssl
+brew install readline
+
+node -v
+// terminal再起動
+
+// Mac portのインストール
+https://www.macports.org/install.php
+sudo port -v selfupdate
+sudo port install pkgconfig
+sudo port install glib2
+
+# sharp用のパッケージ
+sudo port install libjpeg-turbo
+sudo port install libpng
+
+インストール
+https://github.com/libvips/libvips/releases/download/v8.10.2/vips-8.10.2.tar.gz
+tar -zxvf vips-8.10.2.tar.gz
+cd vips-8.10.2/
+./configure
+
+sudo make install
