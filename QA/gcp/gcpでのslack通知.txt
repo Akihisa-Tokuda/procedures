@@ -1,0 +1,44 @@
+- Cloudでよく扱うSlack通知のケース
+1. システム・業務アラートの通知
+2. 課金アラートの通知
+3. ビルドアラートの通知
+4. アプリケーションで任意のメッセージ通知
+
+1. システム・業務アラートの通知
+- (Cloud resource) => Cloud logging => Cloud Pub/Sub => Cloud functions => Slackの流れが一般的です。
+- Cloudのリソース(GAE/GCEなど)のログはCloud Loggingに集約されます。
+- Cloud Loggingに書かれた情報をCloud Pub Subのキューに転送します。
+- Cloud Pub Subのキューが書かれたことをトリガーにCloud functionsが起動されます。
+- Cloud functionsはサーバレスでアプリケーションを実行できる仕組みで、任意の言語（Javascript，Pythonなど）で実行可能です。
+- Cloud function内でSlackのAPIをコールし、任意のチャンネルにメッセージをポストします。
+- 参考URL：https://qiita.com/munaita_/items/49606aa7241f9b57b2b8
+
+※ 質問いただいた内容について
+　１．GAE/GCEのエラーログ→Cloud Logging -> Cloud Pub/Sub からの GASでSlack
+２．Logging -> PubSub -> CloudFunctions -> Slack
+=> 1. の経路でGASが出てきますが、こちら一般的ではなく、Cloud functionでの実行が一般的です。
+GAS側からCloud pub/subの参照を行い、Slack通知を行うことができますが、
+　　　メッセージの到達保証やプログラムの再実行の観点からCloudFunctionsで送信する 2.の方式が良いと思われます。
+
+2. 課金アラートの通知
+- 予算アラート => Cloud Pub/Sub => Cloud functions => Slack
+- お支払いから予算アラートを作成し
+- Pub/Subコンソールから予算アラートを受信するようにします。
+- Cloud function => Slackの流れは1と同じです。
+- 参考URL:https://qiita.com/takezoux2/items/0cff8a2cc4f900cf1d29
+
+3. ビルドアラートの通知
+- GCPではCloud BuildというCD/CIツールを使って、開発リソースのビルドを行うことができます。
+- CI/CDのアラートのプラグインとして、Slackに接続することができます。
+- Cloud Build notifierを利用すると簡単にSlackにメッセージを送信することができます。
+- 参考：https://cloud.google.com/build/docs/configuring-notifications/configure-slack?hl=ja
+
+4. アプリケーションで任意のメッセージ通知
+- アプリケーション実行時の内容をSlackで通知することも一般的です。
+- その通知方法はアプリケーションから直接Slack APIを実行する方法と、Cloud Pub/Sub経由でCloud Functionとして実行する方式があります。
+- 前述したように後者の方がメッセージが保証され、リトライ機能を有するので、Slack通知をできる限り失敗したくないのであれば選択する必要があります。
+
+- Slack APIについて
+- Slack APIの呼び出しについては単純にHTTPリクエストを実装するか、各言語のSDKを使って実装するかの二択となります。
+- 一般的な言語であればSDKをサポートしているので、SDKを利用した開発を行うことが簡単となります。
+- 参考：https://api.slack.com/tools
