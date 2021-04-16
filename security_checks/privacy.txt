@@ -1,0 +1,56 @@
+[身バレに関するチェックと調査結果]
+- WordPressで作成したウェブサイトです。
+    - [domain]/?author=1で、ユーザ名が取得できる
+        - [結果１]author/user であり大丈夫
+    - 写真情報から撮影位置取得
+        - [検証] 特に写真が上がっていないので大丈夫。
+        - 写真を上げる場合はこちらで撮影場所を除去することをオススメします。
+            - https://lab.syncer.jp/Tool/Exif-Remove/
+    - 連絡先情報を誤って載せていないか
+        - メールアドレスなど、連絡先につながるidは見つからなかった。
+        - もちろん個人に特定されるような情報は散見されていない。
+- Cloudflare
+    - 良い選択だと思います。
+- ドメインは海外レジストラで取得しておりwhois情報は非公開設定にしています。
+    - ドメインから、whoisで情報取得できないこと確認しました。
+- 海外のレンタルサーバーを使用しています。共有サーバーのプランのため、同一サーバー上にに運用中の他サイトのドメインが同居しています。
+    - domainから引いたIPで逆引きして別のIPが取得できるか調べました。
+    - IP情報からDomainの逆引きができなかったので問題ありません。Cloudflareの対応かと思います。
+- ・Googleアナリティクスを使用していますが、使用しているアカウントは他サイトと共有しているIDです。
+    - 調べたところ、クロスドメイントラッキングを利用されていると良くないような印象です。
+    - https://support.google.com/analytics/answer/1034342?hl=ja こちらのような設定はされていないでしょうか？
+
+
+
+[OWASP ZAPによる脆弱性調査]
+- サマリ
+    問い合わせフォームの入力項目がWebアプリのユーザ向けリスクが見つかったが、
+    依頼者様の情報特定という観点では、重大なリスクは発見されなかったです。
+
+
+- リスク高
+    - Path Traversal (68)
+        - /edit/ のページの入力項目を使ってpath travasalの驚異がチェックされた。
+        - 説明：https://jvndb.jvn.jp/ja/cwe/CWE-22.html
+        - あまり良いフォームの作りではないが、今回の依頼者様の身バレを防ぐという観点では問題のない脆弱性。
+
+- リスク中
+    - X-Frame-Options Header Not Set (339)
+        - iframeを悪用したclick jakkingの脆弱性
+        - 説明：https://nulab.com/ja/blog/typetalk/measure-clickjacking/
+        - iframeはgoogle mapなどで利用している程度なので、特に問題はない。
+        - こちらもユーザ保護の観点での脆弱性。特に怪しいiframeがあったわけでもなく。
+        - サイトの情報にそもそも個人の情報を扱っているわけではないので、こちらも問題ない。
+
+- リスク低以下 特に問題がない項目なので無視できます。
+    - Absence of Anti-CSRF Tokens (279)
+    - Cookie No HttpOnly Flag (58)
+    - Cookie Without SameSite Attribute (58)
+    - Cross-Domain JavaScript Source File Inclusion (800)
+    - Incomplete or No Cache-control and Pragma HTTP Header Set (713)
+    - Server Leaks Information via "X-Powered-By" HTTP Response Header Field(s) (874)
+    - X-Content-Type-Options Header Missing (686)
+    - Charset Mismatch  (50)
+    - Information Disclosure - Suspicious Comments (44)
+    - Timestamp Disclosure - Unix (1375)
+
